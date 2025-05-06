@@ -12,8 +12,8 @@ const port = 3000;
 
 //Configure AWS SDK
 AWS.config.update({
-    //accessKeyId: 'Your accessKeyId', //uncomment if you want to use your own credentials
-    //secretAccessKey: 'Your secretAccessKey', //uncomment if you want to use your own credentials
+    //accessKeyId: 'Your accessKeyId', //uncomment to use your own credentials
+    //secretAccessKey: 'Your secretAccessKey', //uncomment to use your own credentials
     region: 'us-east-1'
 });
 
