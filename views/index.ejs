@@ -5,151 +5,309 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Image Analysis</title>
-
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:600,400&display=swap" rel="stylesheet">
     <style>
-        body {
-          background-color: #f2f6fc;
-          color: #333;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          margin: 0;
-          padding: 0;
+      body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+        color: #222;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .main-wrapper {
+        width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18), 0 1.5px 6px rgba(61, 125, 217, 0.09);
+        padding: 48px 40px 36px 40px;
+        max-width: 480px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInCard 0.8s;
+      }
+      @keyframes fadeInCard {
+        from { opacity: 0; transform: translateY(40px);}
+        to { opacity: 1; transform: translateY(0);}
+      }
+      .glass-card:before {
+        content: "";
+        position: absolute;
+        top: -80px;
+        right: -80px;
+        width: 180px;
+        height: 180px;
+        background: linear-gradient(135deg, #3d7dd9 0%, #2b4f81 100%);
+        opacity: 0.13;
+        border-radius: 50%;
+        z-index: 0;
+      }
+      .header {
+        z-index: 1;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2b4f81;
+        margin: 0 0 8px 0;
+        letter-spacing: 1px;
+      }
+      .header p {
+        color: #3d7dd9;
+        font-size: 1.08rem;
+        margin: 0;
+        font-weight: 500;
+      }
+      form {
+        width: 100%;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      label {
+        font-weight: 600;
+        color: #2b4f81;
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.08rem;
+        align-self: flex-start;
+      }
+      input[type="file"] {
+        padding: 10px;
+        border: 1.5px solid #b0c4de;
+        border-radius: 8px;
+        width: 100%;
+        background-color: #f0f4fb;
+        cursor: pointer;
+        color: #333;
+        margin-bottom: 18px;
+        transition: border-color 0.2s;
+        font-family: inherit;
+      }
+      input[type="file"]:focus {
+        border-color: #3d7dd9;
+        outline: none;
+      }
+      #preview-container {
+        margin: 18px 0 10px 0;
+        min-height: 180px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0f4fb;
+        border-radius: 14px;
+        border: 1px dashed #b0c4de;
+        transition: border-color 0.2s;
+      }
+      #preview-image {
+        width: 260px;
+        max-width: 90%;
+        display: block;
+        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(61, 125, 217, 0.13);
+        border: 2px solid #eaf0fb;
+        background: #f0f4fb;
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+      #preview-image[src] {
+        opacity: 1;
+      }
+      button {
+        padding: 12px 32px;
+        margin: 18px 0 0 0;
+        background: linear-gradient(90deg, #3d7dd9 60%, #2b4f81 100%);
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 8px rgba(61, 125, 217, 0.08);
+        transition: background 0.3s, transform 0.2s;
+        letter-spacing: 1px;
+      }
+      button:hover {
+        background: linear-gradient(90deg, #2b4f81 60%, #3d7dd9 100%);
+        transform: translateY(-2px) scale(1.03);
+      }
+      .error {
+        color: #d9534f;
+        margin-top: 18px;
+        font-weight: bold;
+        background: #ffeaea;
+        border-left: 4px solid #d9534f;
+        border-radius: 6px;
+        padding: 10px 16px;
+        width: 100%;
+        box-sizing: border-box;
+        z-index: 1;
+      }
+      .results {
+        margin-top: 32px;
+        text-align: left;
+        background: #f7faff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(61, 125, 217, 0.06);
+        padding: 20px 18px 14px 18px;
+        width: 100%;
+        z-index: 1;
+        animation: fadeIn 0.7s;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px);}
+        to { opacity: 1; transform: translateY(0);}
+      }
+      .results h2 {
+        color: #2b4f81;
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+        font-weight: 600;
+      }
+      .results ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .results li {
+        background: #eaf0fb;
+        margin-bottom: 10px;
+        padding: 10px 14px;
+        border-left: 4px solid #3d7dd9;
+        border-radius: 7px;
+        font-size: 1.01rem;
+        font-weight: 500;
+        box-shadow: 0 1px 4px rgba(61, 125, 217, 0.04);
+      }
+
+      /* Spinner styles */
+      #loading-spinner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        border-radius: 24px;
+        display: none; /* hidden by default */
+      }
+      .spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3d7dd9;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg);}
+        100% { transform: rotate(360deg);}
+      }
+
+      @media (max-width: 600px) {
+        .glass-card {
+          padding: 18px 2vw 12px 2vw;
         }
-      
-        .container {
-          max-width: 600px;
-          margin: 50px auto;
-          background-color: #ffffff;
-          padding: 40px 30px;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-          text-align: center;
-        }
-      
-        h1 {
-          font-size: 2rem;
-          color: #2b4f81;
-          margin-bottom: 25px;
-        }
-      
-        label {
-          font-weight: 500;
-          color: #444;
-          display: block;
-          margin-bottom: 10px;
-        }
-      
-        input[type="file"] {
-          padding: 8px;
-          border: 1px solid #b0c4de;
-          border-radius: 6px;
+        #preview-image {
           width: 100%;
-          background-color: #f0f4fb;
-          cursor: pointer;
-          color: #333;
-          margin-bottom: 15px;
+          max-width: 95vw;
         }
-      
-        button {
-          padding: 10px 25px;
-          margin: 10px;
-          background-color: #3d7dd9;
-          border: none;
-          color: white;
-          font-weight: bold;
-          border-radius: 6px;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-      
-        button:hover {
-          background-color: #2f65b3;
-        }
-      
-        .error {
-          color: #d9534f;
-          margin-top: 15px;
-          font-weight: bold;
-        }
-      
-        .results {
-          margin-top: 30px;
-          text-align: left;
-        }
-      
-        .results h2 {
-          color: #2b4f81;
-          font-size: 1.4rem;
-          margin-bottom: 10px;
-        }
-      
-        .results ul {
-          list-style: none;
-          padding: 0;
-        }
-      
-        .results li {
-          background-color: #eaf0fb;
-          margin-bottom: 10px;
-          padding: 10px 15px;
-          border-left: 4px solid #3d7dd9;
-          border-radius: 6px;
-          font-size: 1rem;
-        }
-      </style>
-      
+      }
+    </style>
 </head>
 <body>
-    <div class="container">
+  <div class="main-wrapper">
+    <div class="glass-card">
+      <div class="header">
         <h1>Image Analysis</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <label for="image">Upload Image:</label>
-            <input type="file" id="image" name="image" accept="image/*"/>
-            
-            <div id="preview-container" style="margin-top: 20px;">
-                <img id="preview-image" alt="" style="width: 300px; display: block; margin: 0 auto; border-radius: 8px;"/>
-              </div>
-              
+        <p>Upload an image to detect labels using AI</p>
+      </div>
 
-            <button type="submit">Upload</button>
-        </form>
-        
-        <% if(error) { %>
-            <p class="error"><%= error %></p>
-        <% } %>
-        
-            <div class="results">
-                <% if(labels && labels.length > 0) { %>
-                <h2>Detected labels in image</h2>
-                <ul>
-                    <% labels.forEach(label => { %>
-                        <li><%= label.Name %> (Confidence: <%= label.Confidence.toFixed(2) %>) </li>
-                    <% }) %>
-                </ul>
-            
-                <% } %>
-            </div>
+      <!-- Spinner -->
+      <div id="loading-spinner">
+        <div class="spinner"></div>
+      </div>
 
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="image">Upload Image:</label>
+        <input type="file" id="image" name="image" accept="image/*"/>
+        <div id="preview-container">
+          <img
+            id="preview-image"
+            alt="Uploaded preview"
+            style="<% if (typeof imageUrl !== 'undefined' && imageUrl) { %>display: block;<% } else { %>display: none;<% } %>"
+            <% if (typeof imageUrl !== 'undefined' && imageUrl) { %>src="<%= imageUrl %>"<% } %>
+          />
+        </div>
+        <button type="submit">Analyze Image</button>
+      </form>
+
+      <% if(error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
+      <% if(labels && labels.length > 0) { %>
+      <div class="results">
+        <h2>Detected labels in image</h2>
+        <ul>
+          <% labels.forEach(label => { %>
+            <li><%= label.Name %> (Confidence: <%= label.Confidence.toFixed(2) %>) </li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
     </div>
-    <script>
-        const input = document.getElementById('image');
-        const previewImage = document.getElementById('preview-image');
-      
-        input.addEventListener('change', function () {
-          const file = this.files[0];
-          if (file) {
-            const reader = new FileReader();
-      
-            reader.addEventListener("load", function () {
-              previewImage.setAttribute("src", this.result);
-              previewImage.style.display = "block";
-            });
-      
-            reader.readAsDataURL(file);
-          } else {
-            previewImage.style.display = "none";
-          }
+  </div>
+
+  <script>
+    const input = document.getElementById('image');
+    const previewImage = document.getElementById('preview-image');
+    const form = document.querySelector('form');
+    const spinner = document.getElementById('loading-spinner');
+
+    // Image preview
+    input.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.addEventListener("load", function () {
+          previewImage.setAttribute("src", this.result);
+          previewImage.style.display = "block";
         });
-      </script>
-      
+        reader.readAsDataURL(file);
+      } else {
+        previewImage.style.display = "none";
+        previewImage.removeAttribute("src");
+      }
+    });
+
+    // Show spinner on form submit
+    form.addEventListener('submit', function () {
+      spinner.style.display = 'flex';
+    });
+  </script>
 </body>
 </html>
